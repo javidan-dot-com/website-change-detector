@@ -1,0 +1,25 @@
+{
+  "name": "website-change-detector",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/javidan-dot-com/website-change-detector.git"
+  },
+  "keywords": [
+    "WEBSITE",
+    "CHANGE",
+    "DETECTOR"
+  ],
+  "author": "JAVIDAN.me",
+  "license": "ISC",
+  "dependencies": {
+    "minimist": "^1.2.8",
+    "node-schedule": "^2.1.1",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}

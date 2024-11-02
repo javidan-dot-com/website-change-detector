@@ -1,40 +1,38 @@
 const minimist = require('minimist');
 const schedule = require('node-schedule');
+const botApiHandler = require('node-telegram-bot-api');
 
-console.log('Project is running', process.env.BOT_API_TOKEN)
+const bot = new botApiHandler(process.env.BOT_API_TOKEN);
+
+bot.sendMessage(process.env.TELEGRAM_CHAT_ID, 'Bot is running');
 
 const args = minimist(process.argv.slice(2));
 const URL = args['u'];
 const seconds = args['s'];
 const message = args['m'];
-
-console.log(args);
+let oldPageContent = undefined;
 
 function verifyTerminalInputs() {
-  if (isNaN(seconds)) {
-    console.error('Seconds should be a number');
-    process.exit(1);
-  } else if (seconds < 1) {
-    console.error('Seconds should be greater than 0');
-    process.exit(1);
-  } else if (!URL.includes('https://') && !URL.includes('http://')) {
-    console.error('URL should be a valid URL');
-    process.exit(1);
-  } else if (typeof message !== 'string' || message.trim() === '') {
-    console.error('Message should be string type and not be empty');
-    process.exit(1);
-  } else {
-    console.log('All terminal inputs are valid');
-  }
+    if (isNaN(seconds)) {
+        console.error('Seconds should be a number');
+        process.exit(1);
+    } else if (seconds < 1) {
+        console.error('Seconds should be greater than 0');
+        process.exit(1);
+    } else if (!URL.includes('https://') && !URL.includes('http://')) {
+        console.error('URL should be a valid URL');
+        process.exit(1);
+    } else if (typeof message !== 'string' || message.trim() === '') {
+        console.error('Message should be string type and not be empty');
+        process.exit(1);
+    } else {
+        console.log('All terminal inputs are valid');
+    }
 }
 
 verifyTerminalInputs();
 
-let oldPageContent = undefined;
-
 async function checkIfPageHasChanged() {
-  console.log('Checking if page has changed');
-  
     let pageContent;
 
     try {
@@ -48,8 +46,15 @@ async function checkIfPageHasChanged() {
         oldPageContent = pageContent;
         console.log('Page content is saved');
     } else if (oldPageContent !== pageContent) {
-        console.log('Page content has changed');
         oldPageContent = pageContent;
+
+        try {
+            await bot.sendMessage(process.env.TELEGRAM_CHAT_ID, 'Page content has changed, check the page!');
+            console.log('Page content has changed, check the page!');
+        } catch (error) {
+            console.error('Error while sending message to the chat:', error);
+            process.exit(1);
+        }
     } else {
         console.log('Page content has not changed');
     };

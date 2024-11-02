@@ -30,7 +30,36 @@ function verifyTerminalInputs() {
 
 verifyTerminalInputs();
 
-schedule.scheduleJob(`*/${seconds} * * * * *`, function () {
+let oldPageContent = undefined;
+
+async function checkIfPageHasChanged() {
+  console.log('Checking if page has changed');
+  
+    let pageContent;
+
+    try {
+        pageContent = await fetch(URL).then(res => res.text());
+    } catch (error) {
+        console.error('Error while fetching the page:', error);
+        process.exit(1);
+    }
+
+    if (oldPageContent === undefined) {
+        oldPageContent = pageContent;
+        console.log('Page content is saved');
+    } else if (oldPageContent !== pageContent) {
+        console.log('Page content has changed');
+        oldPageContent = pageContent;
+    } else {
+        console.log('Page content has not changed');
+    };
+
+    console.log('Finished checking page status');
+}
+
+schedule.scheduleJob(`*/${seconds} * * * * *`, async () => {
     console.log('Sending message to the URL', URL);
     console.log('Message:', message);
+
+    await checkIfPageHasChanged();
 });
